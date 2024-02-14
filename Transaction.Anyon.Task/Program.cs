@@ -43,17 +43,19 @@ public class Program {
     }
 
     public List<ProcessedTransaction> CarryBasicProcessing(List<BaseTrasaction> transactions) {
+        List<ProcessedTransaction> processedTransactions = new List<ProcessedTransaction>();
         (List<BaseTrasaction> validTransactions, List<ProcessedTransaction> invalidTransactions) =
             GetProsessingById(transactions);
-        List<ProcessedTransaction> processedTransactions = GetValidityFilterByBalance(validTransactions);
+        processedTransactions.AddRange(invalidTransactions);
+        processedTransactions.AddRange(GetValidityFilterByBalance(validTransactions));
         processedTransactions = GetValidationByOrderId(processedTransactions);
 
 
         return processedTransactions;
     }
 
-    public (List<BaseTrasaction> validTransactions, List<ProcessedTransaction> invalidTransactions) GetProsessingById(
-        List<BaseTrasaction> transactions) {
+    public ( List<BaseTrasaction> validTransactions,
+        List<ProcessedTransaction> invalidTransactions) GetProsessingById(List<BaseTrasaction> transactions) {
         List<BaseTrasaction> validTransactions = new List<BaseTrasaction>();
         List<ProcessedTransaction> invalidTransactions = new List<ProcessedTransaction>();
         List<BaseTrasaction> selectedTransactions = FindTransactionsWithSameId(transactions);
@@ -114,6 +116,13 @@ public class Program {
 
         return processedTransactions;
     }
+}
+
+public class TransactionWithSignsValidity : BaseTrasaction {
+    public bool BalanceValid { get; set; }
+    public bool OrderIdValid { get; set; }
+    public bool TransactionIdValid { get; set; }
+    public bool Processed { get; set; }
 }
 
 public class ProcessedTransaction : BaseTrasaction {
